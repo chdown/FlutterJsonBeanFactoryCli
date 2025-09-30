@@ -11,6 +11,7 @@ class FieldInfo {
     this.jsonKeyName,
     this.serialize,
     this.deserialize,
+    this.isEnum,
   });
 
   final String name;
@@ -21,6 +22,7 @@ class FieldInfo {
   final String? jsonKeyName;
   final bool? serialize;
   final bool? deserialize;
+  final bool? isEnum;
 }
 
 class ClassInfo {
@@ -35,11 +37,13 @@ class EntitySource {
     required this.absolutePath,
     required this.relativePathUnderLib,
     required this.classes,
+    required this.imports,
   });
 
   final String absolutePath;
   final String relativePathUnderLib;
   final List<ClassInfo> classes;
+  final List<String> imports; // raw import directives (e.g., "import '...';"), from source file
 }
 
 class ParsedUnit {
@@ -71,6 +75,7 @@ ParsedUnit extractClasses(ResolvedUnitResult unit) {
           String? jsonKeyName;
           bool? serialize;
           bool? deserialize;
+          bool? isEnum;
           for (final meta in member.metadata) {
             final id = meta.name;
             final name = id.name;
@@ -87,6 +92,8 @@ ParsedUnit extractClasses(ResolvedUnitResult unit) {
                       serialize = (expr.expression as BooleanLiteral).value;
                     } else if (label == 'deserialize' && expr.expression is BooleanLiteral) {
                       deserialize = (expr.expression as BooleanLiteral).value;
+                    } else if (label == 'isEnum' && expr.expression is BooleanLiteral) {
+                      isEnum = (expr.expression as BooleanLiteral).value;
                     }
                   }
                 }
@@ -113,6 +120,7 @@ ParsedUnit extractClasses(ResolvedUnitResult unit) {
               jsonKeyName: jsonKeyName,
               serialize: serialize,
               deserialize: deserialize,
+              isEnum: isEnum,
             ));
           }
         }

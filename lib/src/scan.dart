@@ -34,10 +34,12 @@ Future<List<EntitySource>> scanEntities(Config cfg) async {
       final filtered = parsed.classes.where((c) => c.hasJsonSerializable).toList();
       if (filtered.isEmpty) continue;
       final relUnderLib = rel.split('lib/').length > 1 ? rel.split('lib/')[1] : rel;
+      final imports = _collectImports(unitResult);
       entities.add(EntitySource(
         absolutePath: filePath,
         relativePathUnderLib: relUnderLib,
         classes: filtered,
+        imports: imports,
       ));
     }
   }
@@ -45,6 +47,17 @@ Future<List<EntitySource>> scanEntities(Config cfg) async {
   entities.sort((a, b) => a.relativePathUnderLib.compareTo(b.relativePathUnderLib));
   logInfo('[info] scanned ${entities.length} Dart sources with classes', cfg.logLevel);
   return entities;
+}
+
+List<String> _collectImports(ResolvedUnitResult unit) {
+  final cu = unit.unit;
+  final result = <String>[];
+  for (final d in cu.directives) {
+    if (d is ImportDirective) {
+      result.add(d.toSource());
+    }
+  }
+  return result;
 }
 
 bool _excluded(String rel, Config cfg) {

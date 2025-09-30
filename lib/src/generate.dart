@@ -109,7 +109,13 @@ class JSONField {
 String _renderEntity(Config cfg, EntitySource e, Map<String, String> classPathIndex) {
   final buf = StringBuffer();
   buf.writeln("import 'package:${cfg.packageName}/${cfg.genPath}/base/json_convert_content.dart';");
-  buf.writeln("import 'package:${cfg.packageName}/${e.relativePathUnderLib}';\n");
+  buf.writeln("import 'package:${cfg.packageName}/${e.relativePathUnderLib}';");
+  // also include original imports from the entity source file
+  final passthrough = _passthroughImports(cfg, e);
+  for (final line in passthrough) {
+    buf.writeln(line);
+  }
+  buf.writeln('');
   // add dependent type imports (e.g., nested object or list element types)
   final extraImportLines = _resolveImportLines(cfg, e, classPathIndex);
   for (final line in extraImportLines) {
@@ -138,14 +144,18 @@ String _renderEntity(Config cfg, EntitySource e, Map<String, String> classPathIn
       final key = f.jsonKeyName ?? f.name;
       if (f.isList) {
         final elem = f.elemType ?? 'dynamic';
-        if (_isPrimitive(elem)) {
+        if (f.isEnum == true) {
+          buf.writeln("  data['${key}'] = entity.${f.name}.map((v) => v?.name).toList();");
+        } else if (_isPrimitive(elem)) {
           buf.writeln("  data['${key}'] = entity.${f.name};");
         } else {
           buf.writeln("  data['${key}'] = entity.${f.name}.map((v) => v.toJson()).toList();");
         }
       } else {
         final base = _baseType(f);
-        if (_isPrimitive(base)) {
+        if (f.isEnum == true) {
+          buf.writeln("  data['${key}'] = entity.${f.name}?.name;");
+        } else if (_isPrimitive(base)) {
           buf.writeln("  data['${key}'] = entity.${f.name};");
         } else {
           buf.writeln("  data['${key}'] = entity.${f.name}.toJson();");
@@ -179,10 +189,16 @@ String _getterForField(FieldInfo f) {
   if (f.isList) {
     final elem = f.elemType ?? 'dynamic';
     final key = f.jsonKeyName ?? f.name;
+    if (f.isEnum == true) {
+      return "(json['${key}'] as List<dynamic>?)?.map((e) => jsonConvert.convert<${elem}>(e, enumConvert: (v) => ${elem}.values.byName(v)) as ${elem}).toList()";
+    }
     return "(json['${key}'] as List<dynamic>?)?.map((e) => jsonConvert.convert<${elem}>(e) as ${elem}).toList()";
   }
   final t = f.type.replaceAll('?', '');
   final key = f.jsonKeyName ?? f.name;
+  if (f.isEnum == true) {
+    return "jsonConvert.convert<${t}>(json['${key}'], enumConvert: (v) => ${t}.values.byName(v))";
+  }
   return "jsonConvert.convert<${t}>(json['${key}'])";
 }
 
@@ -235,6 +251,24 @@ Set<String> _resolveImportLines(Config cfg, EntitySource e, Map<String, String> 
     lines.add("import 'package:flutter/material.dart';");
   }
   return lines;
+}
+
+/// Filter and normalize passthrough imports from entity source file
+List<String> _passthroughImports(Config cfg, EntitySource e) {
+  final out = <String>{};
+  for (final raw in e.imports) {
+    final line = raw.trim();
+    if (line.isEmpty) continue;
+    // Skip self import of the entity file and generated base imports we add ourselves
+    if (line.contains("${cfg.genPath}/base/json_convert_content.dart")) continue;
+    if (line.contains(e.relativePathUnderLib)) continue;
+    // Skip json_field.dart, any dart:convert, and any .g.dart imports
+    if (line.endsWith("json_field.dart';")) continue;
+    if (line.contains('dart:convert')) continue;
+    if (line.endsWith(".g.dart';")) continue;
+    out.add(line);
+  }
+  return out.toList();
 }
 
 String _renderConvertContent(Config cfg, List<EntitySource> entities) {
