@@ -3,6 +3,15 @@ description: AI-driven CLI tool to scan Dart entities and generate serialization
 version: 0.1.0
 homepage: https://github.com/chdown/FlutterJsonBeanFactoryCli
 repository: https://github.com/chdown/FlutterJsonBeanFactoryCli
+topics:
+  - flutter
+  - dart
+  - json
+  - serialization
+  - code-generation
+  - cli
+  - FlutterJsonBeanFactory
+  - chdown
 environment:
   sdk: ">=3.0.0 <4.0.0"
 
