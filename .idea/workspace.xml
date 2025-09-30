@@ -4,11 +4,9 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="aa6b1e8e-763c-485a-aa9a-21359311d81f" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/generate.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/generate.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/scan.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/scan.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/types.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/types.dart" afterDir="false" />
+    <list default="true" id="aa6b1e8e-763c-485a-aa9a-21359311d81f" name="Changes" comment="feat(generate):类型 支持枚举序列化与反序列化&#10;&#10;- 在生成代码中添加对枚举字段的处理逻辑&#10;- 序列化时将枚举转为 name 字符串&#10;- 反序列化时通过 byName 方法还原枚举值&#10;- 更新 EntitySource 结构以支持传递原始导入语句&#10;- 过滤并保留源文件中的有效导入语句- 避免重复导入和生成器内部依赖的引入&#10;- 扫描阶段收集实体类的 import 指令- 类型定义中新增 isEnum 标记位用于识别枚举字段">
+      <change beforePath="$PROJECT_DIR$/CHANGELOG.md" beforeDir="false" afterPath="$PROJECT_DIR$/CHANGELOG.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/pubspec.yaml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -67,6 +65,15 @@
       <option name="presentableId" value="Default" />
       <updated>1759139927199</updated>
     </task>
+    <task id="LOCAL-00001" summary="feat(generate):类型 支持枚举序列化与反序列化&#10;&#10;- 在生成代码中添加对枚举字段的处理逻辑&#10;- 序列化时将枚举转为 name 字符串&#10;- 反序列化时通过 byName 方法还原枚举值&#10;- 更新 EntitySource 结构以支持传递原始导入语句&#10;- 过滤并保留源文件中的有效导入语句- 避免重复导入和生成器内部依赖的引入&#10;- 扫描阶段收集实体类的 import 指令- 类型定义中新增 isEnum 标记位用于识别枚举字段">
+      <option name="closed" value="true" />
+      <created>1759226979324</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1759226979324</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -79,5 +86,9 @@
         </entry>
       </map>
     </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="feat(generate):类型 支持枚举序列化与反序列化&#10;&#10;- 在生成代码中添加对枚举字段的处理逻辑&#10;- 序列化时将枚举转为 name 字符串&#10;- 反序列化时通过 byName 方法还原枚举值&#10;- 更新 EntitySource 结构以支持传递原始导入语句&#10;- 过滤并保留源文件中的有效导入语句- 避免重复导入和生成器内部依赖的引入&#10;- 扫描阶段收集实体类的 import 指令- 类型定义中新增 isEnum 标记位用于识别枚举字段" />
+    <option name="LAST_COMMIT_MESSAGE" value="feat(generate):类型 支持枚举序列化与反序列化&#10;&#10;- 在生成代码中添加对枚举字段的处理逻辑&#10;- 序列化时将枚举转为 name 字符串&#10;- 反序列化时通过 byName 方法还原枚举值&#10;- 更新 EntitySource 结构以支持传递原始导入语句&#10;- 过滤并保留源文件中的有效导入语句- 避免重复导入和生成器内部依赖的引入&#10;- 扫描阶段收集实体类的 import 指令- 类型定义中新增 isEnum 标记位用于识别枚举字段" />
   </component>
 </project>

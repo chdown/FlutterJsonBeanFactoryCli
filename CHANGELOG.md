@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.1] - 2025-09-30
+
+### Added
+- isEnum 支持：
+  - FromJson: 自动使用 `EnumType.values.byName` 恢复枚举
+  - ToJson: 输出 `enumValue?.name`
+- 传递实体文件导入：生成的 `.g.dart` 将包含实体源文件中的 import（过滤掉 `json_field.dart`、`dart:convert`、`.g.dart`、自导入、`json_convert_content.dart`）。
+
+### Changed
+- 对齐 IDE 插件导入策略，避免缺失业务依赖
+
+### Fixed
+- 多处边界场景的空安全与类型判断
+
 ## [0.1.0] - 2025-01-21
 
 ### Added

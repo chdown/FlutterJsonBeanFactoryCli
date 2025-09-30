@@ -1,6 +1,6 @@
 name: flutter_json_bean_factory
 description: AI-driven CLI tool to scan Dart entities and generate serialization helpers. Cross-platform replacement for FlutterJsonBeanFactory IDE plugin.
-version: 0.1.0
+version: 0.1.1
 homepage: https://github.com/chdown/FlutterJsonBeanFactoryCli
 repository: https://github.com/chdown/FlutterJsonBeanFactoryCli
 topics:
@@ -8,10 +8,7 @@ topics:
   - dart
   - json
   - serialization
-  - code-generation
-  - cli
-  - FlutterJsonBeanFactory
-  - chdown
+  - flutter-json-bean-factory
 environment:
   sdk: ">=3.0.0 <4.0.0"
 
