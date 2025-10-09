@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:analyzer/dart/analysis/analysis_context_collection.dart';
 import 'package:analyzer/dart/analysis/results.dart';
 import 'package:analyzer/dart/ast/ast.dart';
@@ -21,16 +23,48 @@ Future<List<EntitySource>> scanEntities(Config cfg) async {
 
   for (final ctx in contexts.contexts) {
     final files = ctx.contextRoot.analyzedFiles().where((p0) => p0.endsWith('.dart'));
-    for (final filePath in files) {
+
+    // 优化：快速预筛选包含目标注解的文件
+    final quickCheckStartTime = DateTime.now();
+    final filesWithAnnotations = <String>[];
+
+    // 并行快速检测文件内容
+    final quickCheckFutures = files.map((filePath) async {
       final rel = p.relative(filePath, from: cfg.projectPath).replaceAll('\\', '/');
-      if (_excluded(rel, cfg)) continue;
+      if (_excluded(rel, cfg)) return null;
+
+      try {
+        if (await _hasTargetAnnotations(filePath)) {
+          return filePath;
+        }
+        return null;
+      } catch (e) {
+        return null;
+      }
+    }).toList();
+
+    final quickCheckResults = await Future.wait(quickCheckFutures);
+    for (final result in quickCheckResults) {
+      if (result != null) {
+        filesWithAnnotations.add(result);
+      }
+    }
+
+    final quickCheckEndTime = DateTime.now();
+    final quickCheckDuration = quickCheckEndTime.difference(quickCheckStartTime);
+    final quickCheckSeconds = quickCheckDuration.inMilliseconds / 1000.0;
+
+    logInfo('[info] quick annotation check: ${filesWithAnnotations.length} files contain target annotations in ${quickCheckSeconds.toStringAsFixed(2)}s',
+        cfg.logLevel);
+
+    // 只对包含注解的文件进行 AST 解析
+    for (final filePath in filesWithAnnotations) {
+      final rel = p.relative(filePath, from: cfg.projectPath).replaceAll('\\', '/');
       processedFiles++;
       final unitResult = await ctx.currentSession.getResolvedUnit(filePath);
       if (unitResult is! ResolvedUnitResult) continue;
-      // include only when annotated: fixed to JsonSerializable/JSONField
-      if (!_containsIncludedAnnotations(unitResult, const ['JsonSerializable', 'JSONField'])) {
-        continue;
-      }
+
+      // 优化：跳过重复注解检查，直接提取类
       final parsed = extractClasses(unitResult);
       if (parsed.classes.isEmpty) continue;
       // Only keep classes that are annotated with @JsonSerializable or having fields with @JSONField
@@ -76,35 +110,19 @@ bool _excluded(String rel, Config cfg) {
   return false;
 }
 
-bool _containsIncludedAnnotations(ResolvedUnitResult unit, List<String> include) {
-  if (include.isEmpty) return true; // no filter
-  final CompilationUnit cu = unit.unit;
-  bool has = false;
-  void checkNode(AnnotatedNode node) {
-    for (final meta in node.metadata) {
-      final id = meta.name;
-      final name = id.name;
-      if (include.contains(name)) {
-        has = true;
-        return;
-      }
-    }
-  }
+/// 快速检测文件是否包含目标注解，避免完整 AST 解析
+Future<bool> _hasTargetAnnotations(String filePath) async {
+  try {
+    final file = File(filePath);
+    if (!await file.exists()) return false;
 
-  for (final decl in cu.declarations) {
-    if (decl is ClassDeclaration) {
-      checkNode(decl);
-      if (has) return true;
-      for (final m in decl.members) {
-        if (m is FieldDeclaration) {
-          checkNode(m);
-          if (has) return true;
-        }
-      }
-    } else if (decl is TopLevelVariableDeclaration) {
-      checkNode(decl);
-      if (has) return true;
-    }
+    // 读取文件内容进行快速字符串搜索
+    final content = await file.readAsString();
+
+    // 检查是否包含目标注解
+    return content.contains('@JsonSerializable') || content.contains('@JSONField');
+  } catch (e) {
+    // 如果读取失败，返回 false，让后续处理决定
+    return false;
   }
-  return false;
 }
