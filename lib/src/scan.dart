@@ -8,6 +8,7 @@ import 'log.dart';
 import 'types.dart';
 
 Future<List<EntitySource>> scanEntities(Config cfg) async {
+  final startTime = DateTime.now();
   final lib = cfg.libDir;
   if (!await lib.exists()) {
     logWarn('[warn] lib/ not found; nothing to do', cfg.logLevel);
@@ -16,12 +17,14 @@ Future<List<EntitySource>> scanEntities(Config cfg) async {
 
   final contexts = AnalysisContextCollection(includedPaths: [lib.path]);
   final entities = <EntitySource>[];
+  int processedFiles = 0;
 
   for (final ctx in contexts.contexts) {
     final files = ctx.contextRoot.analyzedFiles().where((p0) => p0.endsWith('.dart'));
     for (final filePath in files) {
       final rel = p.relative(filePath, from: cfg.projectPath).replaceAll('\\', '/');
       if (_excluded(rel, cfg)) continue;
+      processedFiles++;
       final unitResult = await ctx.currentSession.getResolvedUnit(filePath);
       if (unitResult is! ResolvedUnitResult) continue;
       // include only when annotated: fixed to JsonSerializable/JSONField
@@ -45,7 +48,12 @@ Future<List<EntitySource>> scanEntities(Config cfg) async {
   }
 
   entities.sort((a, b) => a.relativePathUnderLib.compareTo(b.relativePathUnderLib));
-  logInfo('[info] scanned ${entities.length} Dart sources with classes', cfg.logLevel);
+
+  final endTime = DateTime.now();
+  final duration = endTime.difference(startTime);
+  final durationSeconds = duration.inMilliseconds / 1000.0;
+
+  logInfo('[info] scan completed: ${entities.length} entities from $processedFiles files in ${durationSeconds.toStringAsFixed(2)}s', cfg.logLevel);
   return entities;
 }
 

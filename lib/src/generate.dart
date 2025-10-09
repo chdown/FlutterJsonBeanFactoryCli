@@ -6,11 +6,17 @@ import 'log.dart';
 import 'types.dart';
 
 Future<bool> generateAll(Config cfg, List<EntitySource> entities) async {
+  final startTime = DateTime.now();
   var changed = false;
+  int filesGenerated = 0;
+
   // 1) json_field.dart
   final jf = File(p.join(cfg.genBaseDir.path, 'json_field.dart'));
   final jsonFieldContent = _jsonFieldTemplate();
-  changed |= await _writeIfChanged(jf, jsonFieldContent, cfg);
+  if (await _writeIfChanged(jf, jsonFieldContent, cfg)) {
+    changed = true;
+    filesGenerated++;
+  }
 
   // 2) entity .g.dart files
   final expected = <String>{};
@@ -22,13 +28,19 @@ Future<bool> generateAll(Config cfg, List<EntitySource> entities) async {
     expected.add(base);
     final out = File(p.join(cfg.projectPath, 'lib', cfg.genPath, base));
     final content = _renderEntity(cfg, e, classPathIndex);
-    changed |= await _writeIfChanged(out, content, cfg);
+    if (await _writeIfChanged(out, content, cfg)) {
+      changed = true;
+      filesGenerated++;
+    }
   }
 
   // 3) json_convert_content.dart
   final jcc = File(p.join(cfg.genBaseDir.path, 'json_convert_content.dart'));
   final convertContent = _renderConvertContent(cfg, entities);
-  changed |= await _writeIfChanged(jcc, convertContent, cfg);
+  if (await _writeIfChanged(jcc, convertContent, cfg)) {
+    changed = true;
+    filesGenerated++;
+  }
 
   // 4) prune - 清理不再需要的 .g.dart 文件
   final genDir = Directory(p.join(cfg.projectPath, 'lib', cfg.genPath));
@@ -49,6 +61,11 @@ Future<bool> generateAll(Config cfg, List<EntitySource> entities) async {
     }
   }
 
+  final endTime = DateTime.now();
+  final duration = endTime.difference(startTime);
+  final durationSeconds = duration.inMilliseconds / 1000.0;
+
+  logInfo('[info] generation completed: $filesGenerated files generated in ${durationSeconds.toStringAsFixed(2)}s', cfg.logLevel);
   return changed;
 }
 
