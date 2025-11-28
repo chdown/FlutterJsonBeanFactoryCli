@@ -5,7 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.1.2] - 2025-01-21
+## [0.1.3] - 2025-11-28
+
+### Changed
+- 修复已知问题
+- 增加测试场景，完善日志
+
+## [0.1.2] - 2025-10-09
 
 ### Changed
 - 优化扫描流程：先进行快速注解检测，再进行AST解析
@@ -24,7 +30,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - 多处边界场景的空安全与类型判断
 
-## [0.1.0] - 2025-01-21
+## [0.1.0] - 2025-09-30
 
 ### Added
 - Initial release of FlutterJsonBeanFactory CLI
