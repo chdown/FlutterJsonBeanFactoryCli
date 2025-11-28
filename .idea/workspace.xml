@@ -4,9 +4,10 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="aa6b1e8e-763c-485a-aa9a-21359311d81f" name="Changes" comment="feat(generate):类型 支持枚举序列化与反序列化&#10;&#10;- 在生成代码中添加对枚举字段的处理逻辑&#10;- 序列化时将枚举转为 name 字符串&#10;- 反序列化时通过 byName 方法还原枚举值&#10;- 更新 EntitySource 结构以支持传递原始导入语句&#10;- 过滤并保留源文件中的有效导入语句- 避免重复导入和生成器内部依赖的引入&#10;- 扫描阶段收集实体类的 import 指令- 类型定义中新增 isEnum 标记位用于识别枚举字段">
-      <change beforePath="$PROJECT_DIR$/CHANGELOG.md" beforeDir="false" afterPath="$PROJECT_DIR$/CHANGELOG.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/pubspec.yaml" afterDir="false" />
+    <list default="true" id="aa6b1e8e-763c-485a-aa9a-21359311d81f" name="Changes" comment="add: 增加测试项目">
+      <change beforePath="$PROJECT_DIR$/.idea/caches/deviceStreaming.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/caches/deviceStreaming.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/example/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/example/pubspec.yaml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -40,23 +41,25 @@
     <option name="showLibraryContents" value="true" />
     <option name="showVisibilityIcons" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.cidr.known.project.marker&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.readMode.enableVisualFormatting&quot;: &quot;true&quot;,
-    &quot;cf.first.check.clang-format&quot;: &quot;false&quot;,
-    &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
-    &quot;dart.analysis.tool.window.visible&quot;: &quot;false&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
-    &quot;last_opened_file_path&quot;: &quot;D:/workPress/flutter/FlutterJsonBeanFactoryCli&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;flutter.settings&quot;,
-    &quot;show.migrate.to.gradle.popup&quot;: &quot;false&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.cidr.known.project.marker": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.readMode.enableVisualFormatting": "true",
+    "cf.first.check.clang-format": "false",
+    "cidr.known.project.marker": "true",
+    "dart.analysis.tool.window.visible": "false",
+    "git-widget-placeholder": "master",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "D:/workPress/flutter/FlutterJsonBeanFactoryCli",
+    "settings.editor.selected.configurable": "flutter.settings",
+    "show.migrate.to.gradle.popup": "false"
   }
-}</component>
+}]]></component>
   <component name="RunManager" selected="Gradle.Run IDE for UI Tests" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
@@ -74,7 +77,15 @@
       <option name="project" value="LOCAL" />
       <updated>1759226979324</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="add: 增加测试项目">
+      <option name="closed" value="true" />
+      <created>1764297621935</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1764297621935</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -90,6 +101,15 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="feat(generate):类型 支持枚举序列化与反序列化&#10;&#10;- 在生成代码中添加对枚举字段的处理逻辑&#10;- 序列化时将枚举转为 name 字符串&#10;- 反序列化时通过 byName 方法还原枚举值&#10;- 更新 EntitySource 结构以支持传递原始导入语句&#10;- 过滤并保留源文件中的有效导入语句- 避免重复导入和生成器内部依赖的引入&#10;- 扫描阶段收集实体类的 import 指令- 类型定义中新增 isEnum 标记位用于识别枚举字段" />
-    <option name="LAST_COMMIT_MESSAGE" value="feat(generate):类型 支持枚举序列化与反序列化&#10;&#10;- 在生成代码中添加对枚举字段的处理逻辑&#10;- 序列化时将枚举转为 name 字符串&#10;- 反序列化时通过 byName 方法还原枚举值&#10;- 更新 EntitySource 结构以支持传递原始导入语句&#10;- 过滤并保留源文件中的有效导入语句- 避免重复导入和生成器内部依赖的引入&#10;- 扫描阶段收集实体类的 import 指令- 类型定义中新增 isEnum 标记位用于识别枚举字段" />
+    <MESSAGE value="add: 增加测试项目" />
+    <option name="LAST_COMMIT_MESSAGE" value="add: 增加测试项目" />
+  </component>
+  <component name="github-copilot-workspace">
+    <instructionFileLocations>
+      <option value=".github/instructions" />
+    </instructionFileLocations>
+    <promptFileLocations>
+      <option value=".github/prompts" />
+    </promptFileLocations>
   </component>
 </project>
