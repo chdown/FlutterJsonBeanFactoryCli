@@ -49,7 +49,9 @@ Future<Config> loadConfig({
           modelSuffix = fj['model_suffix'].toString();
         }
       }
-    } catch (_) {}
+    } catch (e) {
+      logWarn('[warn] Failed to parse pubspec.yaml or flutter_json config: $e. Using defaults.', logLevel);
+    }
   }
 
   // 命令行参数覆盖配置文件

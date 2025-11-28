@@ -39,6 +39,7 @@ Future<List<EntitySource>> scanEntities(Config cfg) async {
         }
         return null;
       } catch (e) {
+        logDebug('[debug] Failed to check annotations in $filePath: $e', cfg.logLevel);
         return null;
       }
     }).toList();
@@ -122,7 +123,8 @@ Future<bool> _hasTargetAnnotations(String filePath) async {
     // 检查是否包含目标注解
     return content.contains('@JsonSerializable') || content.contains('@JSONField');
   } catch (e) {
-    // 如果读取失败，返回 false，让后续处理决定
+    // 文件读取失败（权限问题、编码问题等），返回 false
+    // 调试信息已在调用处记录
     return false;
   }
 }
