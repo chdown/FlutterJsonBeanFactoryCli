@@ -127,18 +127,21 @@ String _renderEntity(Config cfg, EntitySource e, Map<String, String> classPathIn
   final buf = StringBuffer();
   buf.writeln("import 'package:${cfg.packageName}/${cfg.genPath}/base/json_convert_content.dart';");
   buf.writeln("import 'package:${cfg.packageName}/${e.relativePathUnderLib}';");
-  // also include original imports from the entity source file
+  
+  // Collect all imports and deduplicate
   final passthrough = _passthroughImports(cfg, e);
-  for (final line in passthrough) {
-    buf.writeln(line);
-  }
-  buf.writeln('');
-  // add dependent type imports (e.g., nested object or list element types)
   final extraImportLines = _resolveImportLines(cfg, e, classPathIndex);
-  for (final line in extraImportLines) {
+  
+  // Merge and deduplicate using Set
+  final allImports = <String>{...passthrough, ...extraImportLines};
+  
+  // Write all imports
+  for (final line in allImports) {
     buf.writeln(line);
   }
-  if (extraImportLines.isNotEmpty) buf.writeln('');
+  // Always add a blank line after imports
+  buf.writeln('');
+  
   for (final c in e.classes) {
     // $ClassFromJson
     buf.writeln("${c.name} \$${c.name}FromJson(Map<String, dynamic> json) {");
@@ -162,7 +165,19 @@ String _renderEntity(Config cfg, EntitySource e, Map<String, String> classPathIn
       if (f.isList) {
         final elem = f.elemType ?? 'dynamic';
         if (f.isEnum == true) {
-          buf.writeln("  data['${key}'] = entity.${f.name}.map((v) => v?.name).toList();");
+          // For enum lists, elements are always non-nullable enums
+          // Only the list itself can be nullable
+          if (f.isNullable) {
+            buf.writeln("  data['${key}'] = entity.${f.name}?.map((v) => v.name).toList();");
+          } else {
+            buf.writeln("  data['${key}'] = entity.${f.name}.map((v) => v.name).toList();");
+          }
+        } else if (elem == 'DateTime') {
+          if (f.isNullable) {
+            buf.writeln("  data['${key}'] = entity.${f.name}?.map((v) => v.toIso8601String()).toList();");
+          } else {
+            buf.writeln("  data['${key}'] = entity.${f.name}.map((v) => v.toIso8601String()).toList();");
+          }
         } else if (_isPrimitive(elem)) {
           buf.writeln("  data['${key}'] = entity.${f.name};");
         } else {
@@ -172,10 +187,21 @@ String _renderEntity(Config cfg, EntitySource e, Map<String, String> classPathIn
         final base = _baseType(f);
         if (f.isEnum == true) {
           buf.writeln("  data['${key}'] = entity.${f.name}?.name;");
+        } else if (base == 'DateTime') {
+          if (f.isNullable) {
+            buf.writeln("  data['${key}'] = entity.${f.name}?.toIso8601String();");
+          } else {
+            buf.writeln("  data['${key}'] = entity.${f.name}.toIso8601String();");
+          }
         } else if (_isPrimitive(base)) {
           buf.writeln("  data['${key}'] = entity.${f.name};");
         } else {
-          buf.writeln("  data['${key}'] = entity.${f.name}.toJson();");
+          // For non-primitive types (objects), use safe navigation if nullable
+          if (f.isNullable) {
+            buf.writeln("  data['${key}'] = entity.${f.name}?.toJson();");
+          } else {
+            buf.writeln("  data['${key}'] = entity.${f.name}.toJson();");
+          }
         }
       }
     }
@@ -209,7 +235,8 @@ String _getterForField(FieldInfo f) {
     if (f.isEnum == true) {
       return "(json['${key}'] as List<dynamic>?)?.map((e) => jsonConvert.convert<${elem}>(e, enumConvert: (v) => ${elem}.values.byName(v)) as ${elem}).toList()";
     }
-    return "(json['${key}'] as List<dynamic>?)?.map((e) => jsonConvert.convert<${elem}>(e) as ${elem}).toList()";
+    // Add line break for better readability (matching IDE plugin format)
+    return "(json['${key}'] as List<dynamic>?)?.map(\n        (e) => jsonConvert.convert<${elem}>(e) as ${elem}).toList()";
   }
   final t = f.type.replaceAll('?', '');
   final key = f.jsonKeyName ?? f.name;
